@@ -1,0 +1,23 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "projectName": {
+      "value": "automattuner"
+    },
+    "sqlAdminLogin": {
+      "value": "sqladminuser"
+    },
+    "sqlAdminPassword": {
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/YOUR_SUBSCRIPTION_ID/resourceGroups/YOUR_RESOURCE_GROUP/providers/Microsoft.KeyVault/vaults/YOUR_VAULT_NAME"
+        },
+        "secretName": "sqlAdminPassword"
+      }
+    },
+    "dockerComposeBase64": {
+      "value": "REPLACE_WITH_BASE64_ENCODED_DOCKER_COMPOSE"
+    }
+  }
+}

@@ -1,0 +1,6 @@
+Flask
+gunicorn
+msal
+redis
+python-dotenv
+colorama

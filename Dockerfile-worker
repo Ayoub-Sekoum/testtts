@@ -1,0 +1,35 @@
+# Dockerfile for the worker
+# Stage 1: Build the worker environment with PowerShell and .NET SDK
+FROM mcr.microsoft.com/powershell:lts-ubuntu-22.04 AS builder
+
+# Install .NET 8 SDK
+RUN apt-get update && \
+    apt-get install -y dotnet-sdk-8.0
+
+# Install WinTuner CLI
+RUN dotnet tool install --global SvRooij.Winget-Intune.Cli
+
+# Stage 2: Final worker image
+FROM python:3.11-slim
+
+# Set the working directory
+WORKDIR /app
+
+# Copy PowerShell and .NET from the builder stage
+COPY --from=builder /usr/bin/pwsh /usr/bin/pwsh
+COPY --from=builder /usr/share/dotnet /usr/share/dotnet
+COPY --from=builder /root/.dotnet/tools /root/.dotnet/tools
+
+# Add .NET tools to the PATH
+ENV PATH="/root/.dotnet/tools:${PATH}"
+
+# Copy the requirements file and install dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the automattuner code and worker script
+COPY automattuner/automattuner/ /app/automattuner/
+COPY worker.py .
+
+# Command to run the worker
+CMD ["python", "worker.py"]
