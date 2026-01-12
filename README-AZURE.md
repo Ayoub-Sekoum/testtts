@@ -52,20 +52,13 @@ az keyvault secret set --vault-name $KEY_VAULT_NAME --name "AZURE-CLIENT-ID" --v
 az keyvault secret set --vault-name $KEY_VAULT_NAME --name "AZURE-CLIENT-SECRET" --value "YOUR_AZURE_CLIENT_SECRET"
 ```
 
-### 4. Build and Push Docker Images
+### 4. Automated Docker Image Builds
 
-Before deploying, you need to build the Docker images and push them to a container registry (e.g., GHCR).
+The Docker images for this project are built and pushed to the GitHub Container Registry (GHCR) automatically using a GitHub Actions workflow. This process is triggered every time a change is pushed to the `main` branch.
 
-```bash
-# Login to GitHub Container Registry
-docker login ghcr.io -u YOUR_GITHUB_USERNAME
+You can view the workflow in the `.github/workflows/main.yml` file.
 
-# Build, tag, and push each image
-docker-compose -f docker-compose-azure.yml build
-docker-compose -f docker-compose-azure.yml push
-```
-
-*Note: Make sure the image names in `docker-compose-azure.yml` match your container registry repository.*
+*Note: Before proceeding with the deployment, ensure that the workflow has successfully completed and pushed the latest images to GHCR.*
 
 ### 5. Update `parameters.json`
 
@@ -95,8 +88,7 @@ Now, deploy the application using the ARM template and the updated parameters fi
 az deployment group create \
     --resource-group "automattuner-rg" \
     --template-file "azuredeploy.json" \
-    --parameters "@parameters.json" \
-    --parameters sqlAdminLogin="sqladminuser" sqlAdminPassword="YOUR_STRONG_PASSWORD"
+    --parameters "@parameters.json"
 ```
 
 *Note: The deployment may take several minutes.*
